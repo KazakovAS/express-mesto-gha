@@ -23,22 +23,22 @@ const createUser = (req, res) => {
 };
 
 const updateUserInfo = (req, res) => {
-  const user = req.user._id;
+  const userId = req.user._id;
   const { name, about } = req.body;
 
-  User.findByIdAndUpdate(user, { name, about }, { new: true })
+  User.findByIdAndUpdate(userId, { name, about }, { new: true })
     .then((user) => res.send({ data: user }))
     .catch((err) => res.status(500).send({ message: err.message }));
-}
+};
 
 const updateUserAvatar = (req, res) => {
-  const user = req.user._id;
+  const userId = req.user._id;
   const { avatar } = req.body;
 
-  User.findByIdAndUpdate(user, { avatar }, { new: true })
+  User.findByIdAndUpdate(userId, { avatar }, { new: true })
     .then((user) => res.send({ data: user }))
     .catch((err) => res.status(500).send({ message: err.message }));
-}
+};
 
 module.exports = {
   getUsers,

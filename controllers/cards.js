@@ -19,7 +19,7 @@ const deleteCard = (req, res) => {
   const owner = req.user._id;
   const { cardId } = req.params;
 
-  Card.findByIdAndDelete(cardId, { $addToSet: { likes: owner } },{ new: true })
+  Card.findByIdAndDelete(cardId, { $addToSet: { likes: owner } }, { new: true })
     .then((card) => res.send({ data: card }))
     .catch((err) => res.status(500).send({ message: err.message }));
 };
@@ -31,7 +31,7 @@ const setLikeCard = (req, res) => {
   Card.findByIdAndUpdate(cardId, { $addToSet: { likes: owner } }, { new: true })
     .then((card) => res.send({ data: card }))
     .catch((err) => res.status(500).send({ message: err.message }));
-}
+};
 
 const deleteLikeCard = (req, res) => {
   const owner = req.user._id;
@@ -40,7 +40,7 @@ const deleteLikeCard = (req, res) => {
   Card.findByIdAndUpdate(cardId, { $pull: { likes: owner } }, { new: true })
     .then((card) => res.send({ data: card }))
     .catch((err) => res.status(500).send({ message: err.message }));
-}
+};
 
 module.exports = {
   getCards,
