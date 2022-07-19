@@ -7,9 +7,9 @@ const getUsers = (req, res) => {
 };
 
 const getCurrentUser = (req, res) => {
-  const { id } = req.params;
+  const { userId } = req.params;
 
-  User.findById(id)
+  User.findById(userId)
     .then((users) => res.send({ data: users }))
     .catch((err) => res.status(500).send({ message: err.message }));
 };
@@ -17,14 +17,33 @@ const getCurrentUser = (req, res) => {
 const createUser = (req, res) => {
   const { name, about, avatar } = req.body;
 
-  console.log(req.body);
   User.create({ name, about, avatar })
     .then((user) => res.send({ data: user }))
     .catch((err) => res.status(500).send({ message: err.message }));
 };
 
+const updateUserInfo = (req, res) => {
+  const user = req.user._id;
+  const { name, about } = req.body;
+
+  User.findByIdAndUpdate(user, { name, about }, { new: true })
+    .then((user) => res.send({ data: user }))
+    .catch((err) => res.status(500).send({ message: err.message }));
+}
+
+const updateUserAvatar = (req, res) => {
+  const user = req.user._id;
+  const { avatar } = req.body;
+
+  User.findByIdAndUpdate(user, { avatar }, { new: true })
+    .then((user) => res.send({ data: user }))
+    .catch((err) => res.status(500).send({ message: err.message }));
+}
+
 module.exports = {
   getUsers,
   getCurrentUser,
   createUser,
+  updateUserInfo,
+  updateUserAvatar,
 };
