@@ -22,10 +22,9 @@ const createCard = (req, res) => {
 };
 
 const deleteCard = (req, res) => {
-  const owner = req.user._id;
   const { cardId } = req.params;
 
-  Card.findByIdAndDelete(cardId, { $addToSet: { likes: owner } }, { new: true })
+  Card.findByIdAndDelete(cardId)
     .then((card) => res.send(card))
     .catch((err) => {
       if (err.name === 'CastError') {
