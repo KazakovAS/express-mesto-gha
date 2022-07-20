@@ -10,15 +10,16 @@ const getUser = (req, res) => {
   const { userId } = req.params;
 
   User.findById(userId)
-    .then((user) => {
-      if (!user) {
+    .then((user) => res.send(user))
+    .catch((err) => {
+      if (err.name === 'CastError') {
+        res.status(400).send({ message: 'Невалидный идентификатор пользователя.' });
+      } else if (err.statusCode === 404) {
         res.status(404).send({ message: 'Пользователь не существует.' });
-        return;
+      } else {
+        res.status(500).send({ message: err.message });
       }
-
-      res.send(user);
-    })
-    .catch((err) => res.status(500).send({ message: err.message }));
+    });
 };
 
 const createUser = (req, res) => {
@@ -26,7 +27,15 @@ const createUser = (req, res) => {
 
   User.create({ name, about, avatar })
     .then((user) => res.status(201).send(user))
-    .catch((err) => res.status(500).send({ message: err.message }));
+    .catch((err) => {
+      if (err.name === 'ValidationError') {
+        res.status(400).send({ message: 'Невалидный идентификатор пользователя.' });
+      } else if (err.statusCode === 404) {
+        res.status(404).send({ message: 'Пользователь не существует.' });
+      } else {
+        res.status(500).send({ message: err.message });
+      }
+    });
 };
 
 const updateUserInfo = (req, res) => {
@@ -34,15 +43,16 @@ const updateUserInfo = (req, res) => {
   const { name, about } = req.body;
 
   User.findByIdAndUpdate(userId, { name, about }, { new: true })
-    .then((user) => {
-      if (!user) {
+    .then((user) => res.send(user))
+    .catch((err) => {
+      if (err.name === 'CastError') {
+        res.status(400).send({ message: 'Невалидный идентификатор пользователя.' });
+      } else if (err.statusCode === 404) {
         res.status(404).send({ message: 'Пользователь не существует.' });
-        return;
+      } else {
+        res.status(500).send({ message: err.message });
       }
-
-      res.send(user);
-    })
-    .catch((err) => res.status(500).send({ message: err.message }));
+    });
 };
 
 const updateUserAvatar = (req, res) => {
@@ -50,15 +60,16 @@ const updateUserAvatar = (req, res) => {
   const { avatar } = req.body;
 
   User.findByIdAndUpdate(userId, { avatar }, { new: true })
-    .then((user) => {
-      if (!user) {
+    .then((user) => res.send(user))
+    .catch((err) => {
+      if (err.name === 'CastError') {
+        res.status(400).send({ message: 'Невалидный идентификатор пользователя.' });
+      } else if (err.statusCode === 404) {
         res.status(404).send({ message: 'Пользователь не существует.' });
-        return;
+      } else {
+        res.status(500).send({ message: err.message });
       }
-
-      res.send(user);
-    })
-    .catch((err) => res.status(500).send({ message: err.message }));
+    });
 };
 
 module.exports = {
