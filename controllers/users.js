@@ -1,9 +1,15 @@
 const User = require('../models/user');
+const {
+  created,
+  badRequest,
+  notFound,
+  serverError,
+} = require('../utils/responseStatus');
 
 const getUsers = (req, res) => {
   User.find({})
     .then((users) => res.send(users))
-    .catch((err) => res.status(500).send({ message: err.message }));
+    .catch((err) => res.status(serverError).send({ message: err.message }));
 };
 
 const getUser = (req, res) => {
@@ -13,17 +19,17 @@ const getUser = (req, res) => {
     .orFail(() => {
       const error = new Error();
 
-      error.statusCode = 404;
+      error.statusCode = notFound;
       throw error;
     })
     .then((user) => res.send(user))
     .catch((err) => {
       if (err.name === 'CastError') {
-        res.status(400).send({ message: 'Невалидный идентификатор пользователя.' });
-      } else if (err.statusCode === 404) {
-        res.status(404).send({ message: 'Пользователь не существует.' });
+        res.status(badRequest).send({ message: 'Невалидный идентификатор пользователя.' });
+      } else if (err.statusCode === notFound) {
+        res.status(notFound).send({ message: 'Пользователь не существует.' });
       } else {
-        res.status(500).send({ message: err.message });
+        res.status(serverError).send({ message: err.message });
       }
     });
 };
@@ -32,14 +38,14 @@ const createUser = (req, res) => {
   const { name, about, avatar } = req.body;
 
   User.create({ name, about, avatar })
-    .then((user) => res.status(201).send(user))
+    .then((user) => res.status(created).send(user))
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        res.status(400).send({ message: 'Невалидный идентификатор пользователя.' });
-      } else if (err.statusCode === 404) {
-        res.status(404).send({ message: 'Пользователь не существует.' });
+        res.status(badRequest).send({ message: 'Невалидный идентификатор пользователя.' });
+      } else if (err.statusCode === notFound) {
+        res.status(notFound).send({ message: 'Пользователь не существует.' });
       } else {
-        res.status(500).send({ message: err.message });
+        res.status(serverError).send({ message: err.message });
       }
     });
 };
@@ -52,17 +58,17 @@ const updateUserInfo = (req, res) => {
     .orFail(() => {
       const error = new Error();
 
-      error.statusCode = 404;
+      error.statusCode = notFound;
       throw error;
     })
     .then((user) => res.send(user))
     .catch((err) => {
       if (err.name === 'CastError') {
-        res.status(400).send({ message: 'Невалидный идентификатор пользователя.' });
-      } else if (err.statusCode === 404) {
-        res.status(404).send({ message: 'Пользователь не существует.' });
+        res.status(badRequest).send({ message: 'Невалидный идентификатор пользователя.' });
+      } else if (err.statusCode === notFound) {
+        res.status(notFound).send({ message: 'Пользователь не существует.' });
       } else {
-        res.status(500).send({ message: err.message });
+        res.status(serverError).send({ message: err.message });
       }
     });
 };
@@ -75,17 +81,17 @@ const updateUserAvatar = (req, res) => {
     .orFail(() => {
       const error = new Error();
 
-      error.statusCode = 404;
+      error.statusCode = notFound;
       throw error;
     })
     .then((user) => res.send(user))
     .catch((err) => {
       if (err.name === 'CastError') {
-        res.status(400).send({ message: 'Невалидный идентификатор пользователя.' });
-      } else if (err.statusCode === 404) {
-        res.status(404).send({ message: 'Пользователь не существует.' });
+        res.status(badRequest).send({ message: 'Невалидный идентификатор пользователя.' });
+      } else if (err.statusCode === notFound) {
+        res.status(notFound).send({ message: 'Пользователь не существует.' });
       } else {
-        res.status(500).send({ message: err.message });
+        res.status(serverError).send({ message: err.message });
       }
     });
 };

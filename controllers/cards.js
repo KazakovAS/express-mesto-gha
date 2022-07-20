@@ -1,9 +1,15 @@
 const Card = require('../models/card');
+const {
+  created,
+  badRequest,
+  notFound,
+  serverError,
+} = require('../utils/responseStatus');
 
 const getCards = (req, res) => {
   Card.find({})
     .then((cards) => res.send(cards))
-    .catch((err) => res.status(500).send({ message: err.message }));
+    .catch((err) => res.status(serverError).send({ message: err.message }));
 };
 
 const createCard = (req, res) => {
@@ -11,12 +17,12 @@ const createCard = (req, res) => {
   const { name, link } = req.body;
 
   Card.create({ owner, name, link })
-    .then((card) => res.status(201).send(card))
+    .then((card) => res.status(created).send(card))
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        res.status(400).send({ message: 'Ошибка валидации' });
+        res.status(badRequest).send({ message: 'Ошибка валидации' });
       } else {
-        res.status(500).send({ message: 'Что-то пошло не так' });
+        res.status(serverError).send({ message: 'Что-то пошло не так' });
       }
     });
 };
@@ -28,17 +34,17 @@ const deleteCard = (req, res) => {
     .orFail(() => {
       const error = new Error();
 
-      error.statusCode = 404;
+      error.statusCode = notFound;
       throw error;
     })
     .then((card) => res.send(card))
     .catch((err) => {
       if (err.name === 'CastError') {
-        res.status(400).send({ message: 'Невалидный идентификатор карточки' });
-      } else if (err.statusCode === 404) {
-        res.status(404).send({ message: 'Карточка не существует.' });
+        res.status(badRequest).send({ message: 'Невалидный идентификатор карточки' });
+      } else if (err.statusCode === notFound) {
+        res.status(notFound).send({ message: 'Карточка не существует.' });
       } else {
-        res.status(500).send({ message: err.message });
+        res.status(serverError).send({ message: err.message });
       }
     });
 };
@@ -51,17 +57,17 @@ const setLikeCard = (req, res) => {
     .orFail(() => {
       const error = new Error();
 
-      error.statusCode = 404;
+      error.statusCode = notFound;
       throw error;
     })
     .then((card) => res.send(card))
     .catch((err) => {
       if (err.name === 'CastError') {
-        res.status(400).send({ message: 'Невалидный идентификатор карточки' });
-      } else if (err.statusCode === 404) {
-        res.status(404).send({ message: 'Карточка не существует.' });
+        res.status(badRequest).send({ message: 'Невалидный идентификатор карточки' });
+      } else if (err.statusCode === notFound) {
+        res.status(notFound).send({ message: 'Карточка не существует.' });
       } else {
-        res.status(500).send({ message: err.message });
+        res.status(serverError).send({ message: err.message });
       }
     });
 };
@@ -74,17 +80,17 @@ const deleteLikeCard = (req, res) => {
     .orFail(() => {
       const error = new Error();
 
-      error.statusCode = 404;
+      error.statusCode = notFound;
       throw error;
     })
     .then((card) => res.send(card))
     .catch((err) => {
       if (err.name === 'CastError') {
-        res.status(400).send({ message: 'Невалидный идентификатор карточки' });
-      } else if (err.statusCode === 404) {
-        res.status(404).send({ message: 'Карточка не существует.' });
+        res.status(badRequest).send({ message: 'Невалидный идентификатор карточки' });
+      } else if (err.statusCode === notFound) {
+        res.status(notFound).send({ message: 'Карточка не существует.' });
       } else {
-        res.status(500).send({ message: err.message });
+        res.status(serverError).send({ message: err.message });
       }
     });
 };
