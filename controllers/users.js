@@ -2,28 +2,98 @@ const User = require('../models/user');
 
 const getUsers = (req, res) => {
   User.find({})
-    .then((users) => res.send({ data: users }))
+    .then((users) => res.send(users))
     .catch((err) => res.status(500).send({ message: err.message }));
 };
 
-const getCurrentUser = (req, res) => {
-  const { id } = req.params;
+const getUser = (req, res) => {
+  const { userId } = req.params;
 
-  User.findById(id)
-    .then((users) => res.send({ data: users }))
-    .catch((err) => res.status(500).send({ message: err.message }));
+  User.findById(userId)
+    .orFail(() => {
+      const error = new Error();
+
+      error.statusCode = 404;
+      throw error;
+    })
+    .then((user) => res.send(user))
+    .catch((err) => {
+      if (err.name === 'CastError') {
+        res.status(400).send({ message: 'Невалидный идентификатор пользователя.' });
+      } else if (err.statusCode === 404) {
+        res.status(404).send({ message: 'Пользователь не существует.' });
+      } else {
+        res.status(500).send({ message: err.message });
+      }
+    });
 };
 
 const createUser = (req, res) => {
   const { name, about, avatar } = req.body;
 
   User.create({ name, about, avatar })
-    .then((user) => res.send({ data: user }))
-    .catch((err) => res.status(500).send({ message: err.message }));
+    .then((user) => res.status(201).send(user))
+    .catch((err) => {
+      if (err.name === 'ValidationError') {
+        res.status(400).send({ message: 'Невалидный идентификатор пользователя.' });
+      } else if (err.statusCode === 404) {
+        res.status(404).send({ message: 'Пользователь не существует.' });
+      } else {
+        res.status(500).send({ message: err.message });
+      }
+    });
+};
+
+const updateUserInfo = (req, res) => {
+  const userId = req.user._id;
+  const { name, about } = req.body;
+
+  User.findByIdAndUpdate(userId, { name, about }, { new: true })
+    .orFail(() => {
+      const error = new Error();
+
+      error.statusCode = 404;
+      throw error;
+    })
+    .then((user) => res.send(user))
+    .catch((err) => {
+      if (err.name === 'CastError') {
+        res.status(400).send({ message: 'Невалидный идентификатор пользователя.' });
+      } else if (err.statusCode === 404) {
+        res.status(404).send({ message: 'Пользователь не существует.' });
+      } else {
+        res.status(500).send({ message: err.message });
+      }
+    });
+};
+
+const updateUserAvatar = (req, res) => {
+  const userId = req.user._id;
+  const { avatar } = req.body;
+
+  User.findByIdAndUpdate(userId, { avatar }, { new: true })
+    .orFail(() => {
+      const error = new Error();
+
+      error.statusCode = 404;
+      throw error;
+    })
+    .then((user) => res.send(user))
+    .catch((err) => {
+      if (err.name === 'CastError') {
+        res.status(400).send({ message: 'Невалидный идентификатор пользователя.' });
+      } else if (err.statusCode === 404) {
+        res.status(404).send({ message: 'Пользователь не существует.' });
+      } else {
+        res.status(500).send({ message: err.message });
+      }
+    });
 };
 
 module.exports = {
   getUsers,
-  getCurrentUser,
+  getUser,
   createUser,
+  updateUserInfo,
+  updateUserAvatar,
 };
