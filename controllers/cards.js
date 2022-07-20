@@ -25,6 +25,11 @@ const deleteCard = (req, res) => {
   const { cardId } = req.params;
 
   Card.findByIdAndDelete(cardId)
+    .orFail(() => {
+      const error = new Error();
+      error.statusCode = 404;
+      throw error;
+    })
     .then((card) => res.send(card))
     .catch((err) => {
       if (err.name === 'CastError') {
@@ -42,6 +47,11 @@ const setLikeCard = (req, res) => {
   const { cardId } = req.params;
 
   Card.findByIdAndUpdate(cardId, { $addToSet: { likes: owner } }, { new: true })
+    .orFail(() => {
+      const error = new Error();
+      error.statusCode = 404;
+      throw error;
+    })
     .then((card) => res.send(card))
     .catch((err) => {
       if (err.name === 'CastError') {
@@ -59,6 +69,11 @@ const deleteLikeCard = (req, res) => {
   const { cardId } = req.params;
 
   Card.findByIdAndUpdate(cardId, { $pull: { likes: owner } }, { new: true })
+    .orFail(() => {
+      const error = new Error();
+      error.statusCode = 404;
+      throw error;
+    })
     .then((card) => res.send(card))
     .catch((err) => {
       if (err.name === 'CastError') {
