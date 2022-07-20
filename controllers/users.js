@@ -2,7 +2,7 @@ const User = require('../models/user');
 
 const getUsers = (req, res) => {
   User.find({})
-    .then((users) => res.send(users))
+    .then((users) => res.status(200).send(users))
     .catch((err) => res.status(500).send({ message: err.message }));
 };
 
@@ -10,10 +10,15 @@ const getUser = (req, res) => {
   const { userId } = req.params;
 
   User.findById(userId)
-    .then((users) => res.send(users))
-    .catch((err) => {
-      res.status(500).send({ message: err.message })
-    });
+    .then((user) => {
+      if (!user) {
+        res.status(404).send({ "message": "Пользователь не существует."});
+        return;
+      }
+
+      res.status(200).send(user);
+    })
+    .catch((err) => res.status(500).send({ message: err.message }));
 };
 
 const createUser = (req, res) => {
@@ -29,7 +34,14 @@ const updateUserInfo = (req, res) => {
   const { name, about } = req.body;
 
   User.findByIdAndUpdate(userId, { name, about }, { new: true })
-    .then((user) => res.send(user))
+    .then((user) => {
+      if (!user) {
+        res.status(404).send({ "message": "Пользователь не существует."});
+        return;
+      }
+
+      res.status(200).send(user);
+    })
     .catch((err) => res.status(500).send({ message: err.message }));
 };
 
@@ -38,7 +50,14 @@ const updateUserAvatar = (req, res) => {
   const { avatar } = req.body;
 
   User.findByIdAndUpdate(userId, { avatar }, { new: true })
-    .then((user) => res.send(user))
+    .then((user) => {
+      if (!user) {
+        res.status(404).send({ "message": "Пользователь не существует."});
+        return;
+      }
+
+      res.status(200).send(user);
+    })
     .catch((err) => res.status(500).send({ message: err.message }));
 };
 
