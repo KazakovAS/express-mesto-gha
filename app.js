@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 
 // const authorization = require('./middlewares/authorization');
-const pageNotFound = require('./middlewares/pageNotFound');
+// const pageNotFound = require('./middlewares/pageNotFound');
 const usersRouter = require('./routes/users');
 const cardsRouter = require('./routes/cards');
 
@@ -24,6 +24,6 @@ app.use((req, res, next) => {
 });
 app.use('/users', usersRouter);
 app.use('/cards', cardsRouter);
-app.use(pageNotFound);
+// app.use(pageNotFound);
 
 app.listen(PORT);
