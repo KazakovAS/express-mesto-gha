@@ -12,7 +12,7 @@ const getUser = (req, res) => {
   User.findById(userId)
     .then((user) => {
       if (!user) {
-        res.status(404).send({ "message": "Пользователь не существует."});
+        res.status(404).send({ message: 'Пользователь не существует.' });
         return;
       }
 
@@ -36,7 +36,7 @@ const updateUserInfo = (req, res) => {
   User.findByIdAndUpdate(userId, { name, about }, { new: true })
     .then((user) => {
       if (!user) {
-        res.status(404).send({ "message": "Пользователь не существует."});
+        res.status(404).send({ message: 'Пользователь не существует.' });
         return;
       }
 
@@ -52,7 +52,7 @@ const updateUserAvatar = (req, res) => {
   User.findByIdAndUpdate(userId, { avatar }, { new: true })
     .then((user) => {
       if (!user) {
-        res.status(404).send({ "message": "Пользователь не существует."});
+        res.status(404).send({ message: 'Пользователь не существует.' });
         return;
       }
 

@@ -14,7 +14,7 @@ const createCard = (req, res) => {
     .then((card) => res.status(201).send(card))
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        res.status(400).send({ message: "Ошибка валидации" });
+        res.status(400).send({ message: 'Ошибка валидации' });
       } else {
         res.status(500).send({ message: 'Что-то пошло не так' });
       }
@@ -28,7 +28,7 @@ const deleteCard = (req, res) => {
   Card.findByIdAndDelete(cardId, { $addToSet: { likes: owner } }, { new: true })
     .then((card) => {
       if (!card) {
-        res.status(404).send({ "message": "Карточка не существует."});
+        res.status(404).send({ message: 'Карточка не существует.' });
         return;
       }
 
@@ -44,7 +44,7 @@ const setLikeCard = (req, res) => {
   Card.findByIdAndUpdate(cardId, { $addToSet: { likes: owner } }, { new: true })
     .then((card) => {
       if (!card) {
-        res.status(404).send({ "message": "Карточка не существует."});
+        res.status(404).send({ message: 'Карточка не существует.' });
         return;
       }
 
@@ -60,7 +60,7 @@ const deleteLikeCard = (req, res) => {
   Card.findByIdAndUpdate(cardId, { $pull: { likes: owner } }, { new: true })
     .then((card) => {
       if (!card) {
-        res.status(404).send({ "message": "Карточка не существует."});
+        res.status(404).send({ message: 'Карточка не существует.' });
         return;
       }
 
