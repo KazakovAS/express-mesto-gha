@@ -10,6 +10,12 @@ const getUser = (req, res) => {
   const { userId } = req.params;
 
   User.findById(userId)
+    .orFail(() => {
+      const error = new Error();
+
+      error.statusCode = 404;
+      throw error;
+    })
     .then((user) => res.send(user))
     .catch((err) => {
       if (err.name === 'CastError') {
@@ -43,6 +49,12 @@ const updateUserInfo = (req, res) => {
   const { name, about } = req.body;
 
   User.findByIdAndUpdate(userId, { name, about }, { new: true })
+    .orFail(() => {
+      const error = new Error();
+
+      error.statusCode = 404;
+      throw error;
+    })
     .then((user) => res.send(user))
     .catch((err) => {
       if (err.name === 'CastError') {
@@ -60,6 +72,12 @@ const updateUserAvatar = (req, res) => {
   const { avatar } = req.body;
 
   User.findByIdAndUpdate(userId, { avatar }, { new: true })
+    .orFail(() => {
+      const error = new Error();
+
+      error.statusCode = 404;
+      throw error;
+    })
     .then((user) => res.send(user))
     .catch((err) => {
       if (err.name === 'CastError') {

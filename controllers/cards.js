@@ -27,6 +27,7 @@ const deleteCard = (req, res) => {
   Card.findByIdAndDelete(cardId)
     .orFail(() => {
       const error = new Error();
+
       error.statusCode = 404;
       throw error;
     })
@@ -49,6 +50,7 @@ const setLikeCard = (req, res) => {
   Card.findByIdAndUpdate(cardId, { $addToSet: { likes: owner } }, { new: true })
     .orFail(() => {
       const error = new Error();
+
       error.statusCode = 404;
       throw error;
     })
@@ -71,6 +73,7 @@ const deleteLikeCard = (req, res) => {
   Card.findByIdAndUpdate(cardId, { $pull: { likes: owner } }, { new: true })
     .orFail(() => {
       const error = new Error();
+
       error.statusCode = 404;
       throw error;
     })
