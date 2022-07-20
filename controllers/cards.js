@@ -2,7 +2,7 @@ const Card = require('../models/card');
 
 const getCards = (req, res) => {
   Card.find({})
-    .then((cards) => res.status(200).send(cards))
+    .then((cards) => res.send(cards))
     .catch((err) => res.status(500).send({ message: err.message }));
 };
 
@@ -26,15 +26,16 @@ const deleteCard = (req, res) => {
   const { cardId } = req.params;
 
   Card.findByIdAndDelete(cardId, { $addToSet: { likes: owner } }, { new: true })
-    .then((card) => {
-      if (!card) {
+    .then((card) => res.send(card))
+    .catch((err) => {
+      if (err.name === 'CastError') {
+        res.status(400).send({ message: 'Невалидный идентификатор карточки' });
+      } else if (err.statusCode === 404) {
         res.status(404).send({ message: 'Карточка не существует.' });
-        return;
+      } else {
+        res.status(500).send({ message: err.message });
       }
-
-      res.status(200).send(card);
-    })
-    .catch((err) => res.status(500).send({ message: err.message }));
+    });
 };
 
 const setLikeCard = (req, res) => {
@@ -42,15 +43,16 @@ const setLikeCard = (req, res) => {
   const { cardId } = req.params;
 
   Card.findByIdAndUpdate(cardId, { $addToSet: { likes: owner } }, { new: true })
-    .then((card) => {
-      if (!card) {
+    .then((card) => res.send(card))
+    .catch((err) => {
+      if (err.name === 'CastError') {
+        res.status(400).send({ message: 'Невалидный идентификатор карточки' });
+      } else if (err.statusCode === 404) {
         res.status(404).send({ message: 'Карточка не существует.' });
-        return;
+      } else {
+        res.status(500).send({ message: err.message });
       }
-
-      res.status(200).send(card);
-    })
-    .catch((err) => res.status(500).send({ message: err.message }));
+    });
 };
 
 const deleteLikeCard = (req, res) => {
@@ -58,15 +60,16 @@ const deleteLikeCard = (req, res) => {
   const { cardId } = req.params;
 
   Card.findByIdAndUpdate(cardId, { $pull: { likes: owner } }, { new: true })
-    .then((card) => {
-      if (!card) {
+    .then((card) => res.send(card))
+    .catch((err) => {
+      if (err.name === 'CastError') {
+        res.status(400).send({ message: 'Невалидный идентификатор карточки' });
+      } else if (err.statusCode === 404) {
         res.status(404).send({ message: 'Карточка не существует.' });
-        return;
+      } else {
+        res.status(500).send({ message: err.message });
       }
-
-      res.status(200).send(card);
-    })
-    .catch((err) => res.status(500).send({ message: err.message }));
+    });
 };
 
 module.exports = {
