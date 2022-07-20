@@ -12,7 +12,6 @@ const getUser = (req, res) => {
   User.findById(userId)
     .then((users) => res.send(users))
     .catch((err) => {
-      console.log(1)
       res.status(500).send({ message: err.message })
     });
 };
