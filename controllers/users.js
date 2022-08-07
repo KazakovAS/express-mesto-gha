@@ -3,8 +3,11 @@ const {
   created,
   badRequest,
   notFound,
+  conflict,
   serverError,
 } = require('../utils/responseStatus');
+
+const MONGO_DUPLICATE_ERROR_CODE = 11000;
 
 const getUsers = (req, res) => {
   User.find({})
@@ -35,13 +38,15 @@ const getUser = (req, res) => {
 };
 
 const createUser = (req, res) => {
-  const { name, about, avatar } = req.body;
+  const { name, about, avatar, email, password } = req.body;
 
-  User.create({ name, about, avatar })
+  User.create({ name, about, avatar, email, password })
     .then((user) => res.status(created).send(user))
     .catch((err) => {
       if (err.name === 'ValidationError') {
         res.status(badRequest).send({ message: 'Невалидный идентификатор пользователя.' });
+      } else if (err.code === MONGO_DUPLICATE_ERROR_CODE) {
+        res.status(conflict).send({ message: 'Email занят.' });
       } else if (err.statusCode === notFound) {
         res.status(notFound).send({ message: 'Пользователь не существует.' });
       } else {
