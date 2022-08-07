@@ -1,13 +1,16 @@
+const bcrypt = require('bcrypt');
 const User = require('../models/user');
 const {
   created,
   badRequest,
+  forbidden,
   notFound,
   conflict,
   serverError,
 } = require('../utils/responseStatus');
 
 const MONGO_DUPLICATE_ERROR_CODE = 11000;
+const SALT_ROUNDS = 10;
 
 const getUsers = (req, res) => {
   User.find({})
@@ -40,7 +43,13 @@ const getUser = (req, res) => {
 const createUser = (req, res) => {
   const { name, about, avatar, email, password } = req.body;
 
-  User.create({ name, about, avatar, email, password })
+  if (!email || !password) {
+    return res.status(badRequest).send({ message: 'Не передан email или пароль' })
+  }
+
+  bcrypt
+    .hash(password, SALT_ROUNDS)
+    .then((hash) =>  User.create({ name, about, avatar, email, password: hash }))
     .then((user) => res.status(created).send(user))
     .catch((err) => {
       if (err.name === 'ValidationError') {
@@ -101,10 +110,46 @@ const updateUserAvatar = (req, res) => {
     });
 };
 
+const login = (req, res) => {
+  const { email, password } = req.body;
+
+  if (!email || !password) {
+    return res.status(badRequest).send({ message: 'Не передан email или пароль' })
+  }
+
+  User.findOne({ email })
+    .then((user) => {
+      if (!user) {
+        const error = new Error();
+
+        error.statusCode = forbidden;
+        throw error;
+      }
+
+      return bcrypt.compare(password, user.password);
+    })
+    .then((isPasswordCorrect) => {
+      if (!isPasswordCorrect) {
+        const error = new Error();
+
+        error.statusCode = forbidden;
+        throw error;
+      }
+    })
+    .catch((err) => {
+      if (err.statusCode === forbidden) {
+        return res.status(forbidden).send({ message: 'Не правильный email или пароль' });
+      } else {
+        res.status(serverError).send({ message: err.message });
+      }
+    })
+}
+
 module.exports = {
   getUsers,
   getUser,
   createUser,
   updateUserInfo,
   updateUserAvatar,
+  login,
 };
