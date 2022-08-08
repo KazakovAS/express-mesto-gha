@@ -17,7 +17,7 @@ const auth = (req, res, next) => {
     User.findOne({ email: payload.email }).select('+password')
       .then((user) => {
         if (!user) {
-          next(new ForbiddenError('Не правильный email или пароль.'));
+          throw new ForbiddenError('Не правильный email или пароль.');
         }
 
         req.user = payload;

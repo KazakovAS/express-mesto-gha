@@ -20,7 +20,7 @@ const getUser = (req, res, next) => {
   const { userId } = req.params;
 
   User.findById(userId)
-    .orFail(() => new NotFoundError('Пользователь не существует.'))
+    .orFail(() => throw new NotFoundError('Пользователь не существует.'))
     .then((user) => res.send(user))
     .catch((err) => {
       if (err.name === 'CastError') {
@@ -72,7 +72,7 @@ const updateUserInfo = (req, res, next) => {
   const { name, about } = req.body;
 
   User.findByIdAndUpdate(userId, { name, about }, { new: true })
-    .orFail(() => new NotFoundError('Пользователь не существует.'))
+    .orFail(() => throw new NotFoundError('Пользователь не существует.'))
     .then((user) => res.send(user))
     .catch((err) => {
       if (err.name === 'CastError') {
@@ -88,7 +88,7 @@ const updateUserAvatar = (req, res, next) => {
   const { avatar } = req.body;
 
   User.findByIdAndUpdate(userId, { avatar }, { new: true })
-    .orFail(() => new NotFoundError('Пользователь не существует.'))
+    .orFail(() => throw new NotFoundError('Пользователь не существует.'))
     .then((user) => res.send(user))
     .catch((err) => {
       if (err.name === 'CastError') {
@@ -109,7 +109,7 @@ const login = (req, res, next) => {
   User.findOne({ email })
     .then((user) => {
       if (!user) {
-        next(new NotFoundError('Пользователь не существует.'));
+        throw new NotFoundError('Пользователь не существует.');
       }
 
       return Promise.all([
@@ -119,7 +119,7 @@ const login = (req, res, next) => {
     })
     .then(([user, isPasswordCorrect]) => {
       if (!isPasswordCorrect) {
-        next(new ForbiddenError('Не правильный email или пароль.'));
+        throw new ForbiddenError('Не правильный email или пароль.');
       }
 
       return generateToken({ _id: user._id }, '7d');

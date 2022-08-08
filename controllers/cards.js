@@ -28,7 +28,7 @@ const deleteCard = (req, res, next) => {
   const { cardId } = req.params;
 
   Card.findByIdAndDelete(cardId)
-    .orFail(() => new NotFoundError('Карточка не существует.'))
+    .orFail(() => throw new NotFoundError('Карточка не существует.'))
     .then((card) => res.send(card))
     .catch(next);
 };
@@ -38,7 +38,7 @@ const setLikeCard = (req, res, next) => {
   const { cardId } = req.params;
 
   Card.findByIdAndUpdate(cardId, { $addToSet: { likes: owner } }, { new: true })
-    .orFail(() => new NotFoundError('Карточка не существует.'))
+    .orFail(() => throw new NotFoundError('Карточка не существует.'))
     .then((card) => res.send(card))
     .catch((err) => {
       if (err.name === 'CastError') {
@@ -54,7 +54,7 @@ const deleteLikeCard = (req, res, next) => {
   const { cardId } = req.params;
 
   Card.findByIdAndUpdate(cardId, { $pull: { likes: owner } }, { new: true })
-    .orFail(() => new NotFoundError('Карточка не существует.'))
+    .orFail(() => throw new NotFoundError('Карточка не существует.'))
     .then((card) => res.send(card))
     .catch((err) => {
       if (err.name === 'CastError') {
