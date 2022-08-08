@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const validator = require('validator');
 const { urlRegExp } = require('../middlewares/validatons');
 
 const cardSchema = new mongoose.Schema({
