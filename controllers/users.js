@@ -1,4 +1,5 @@
 const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
 const User = require('../models/user');
 const {
   created,
@@ -11,6 +12,7 @@ const {
 
 const MONGO_DUPLICATE_ERROR_CODE = 11000;
 const SALT_ROUNDS = 10;
+const SECRET_KEY = 'WUBBA LUBBA DUB DUB';
 
 const getUsers = (req, res) => {
   User.find({})
@@ -126,15 +128,20 @@ const login = (req, res) => {
         throw error;
       }
 
-      return bcrypt.compare(password, user.password);
+      return Promise.all([
+        user,
+        bcrypt.compare(password, user.password),
+      ]);
     })
-    .then((isPasswordCorrect) => {
+    .then(([user, isPasswordCorrect]) => {
       if (!isPasswordCorrect) {
         const error = new Error();
 
         error.statusCode = forbidden;
         throw error;
       }
+
+      const token = jwt.sign({ _id: user._id}, SECRET_KEY, { expiresIn: 7d });
     })
     .catch((err) => {
       if (err.statusCode === forbidden) {
