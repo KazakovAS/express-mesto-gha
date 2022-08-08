@@ -17,8 +17,24 @@ const getUsers = (req, res, next) => {
     .catch(next);
 };
 
-const getCurrentUser = (req, res, next) => {
+const getUser = (req, res, next) => {
   const { userId } = req.params;
+
+  User.findById(userId)
+    .orFail(() => new NotFoundError('Пользователь не существует.'))
+    .then((user) => res.send(user))
+    .catch((err) => {
+      if (err.name === 'CastError') {
+        next(new BadRequestError('Невалидный идентификатор пользователя.'));
+      } else {
+        next(err);
+      }
+    });
+};
+
+const getCurrentUser = (req, res, next) => {
+  const userId = req.user._id;
+
   User.findById(userId)
     .orFail(() => new NotFoundError('Пользователь не существует.'))
     .then((user) => res.send(user))
@@ -144,6 +160,7 @@ const login = (req, res, next) => {
 };
 
 module.exports = {
+  getUser,
   getUsers,
   getCurrentUser,
   createUser,
