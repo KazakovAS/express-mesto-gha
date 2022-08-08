@@ -3,10 +3,10 @@ const User = require('../models/user');
 const UnauthorizedError = require('../errors/UnauthorizedError');
 const ForbiddenError = require('../errors/ForbiddenError');
 
-const auth = (req, res, next) => {
-  const { authorization } = req.headers.authorization;
+const authorization = (req, res, next) => {
+  const auth = req.headers.authorization;
 
-  if (!authorization) {
+  if (!auth) {
     next(new UnauthorizedError('Необходима авторизация.'));
   }
 
@@ -30,4 +30,4 @@ const auth = (req, res, next) => {
   }
 };
 
-module.exports = auth;
+module.exports = authorization;

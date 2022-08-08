@@ -2,7 +2,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 
-const auth = require('./middlewares/auth');
+const authorization = require('./middlewares/authorization');
 const errorHandler = require('./middlewares/errorHandler');
 const logErrors = require('./middlewares/logErrors');
 const createUser = require('./routes/createUser');
@@ -21,7 +21,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use('/signin', login);
 app.use('/signup', createUser);
 
-app.use(auth);
+app.use(authorization);
 app.use('/users', usersRouter);
 app.use('/cards', cardsRouter);
 
