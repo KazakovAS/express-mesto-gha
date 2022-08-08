@@ -25,8 +25,8 @@ app.use('/signin', validateAuthentication, login);
 app.use('/signup', validateUserBody, createUser);
 
 app.use(authorization);
-app.use('/users', usersRouter);
-app.use('/cards', cardsRouter);
+app.use('/users', authorization, usersRouter);
+app.use('/cards', authorization, cardsRouter);
 app.use(notFoundPage);
 
 app.use(errors());
