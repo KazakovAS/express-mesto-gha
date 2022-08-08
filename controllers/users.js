@@ -72,7 +72,7 @@ const updateUserInfo = (req, res, next) => {
   const { name, about } = req.body;
 
   User.findByIdAndUpdate(userId, { name, about }, { new: true })
-    .orFail(() => throw new NotFoundError('Пользователь не существует.'))
+    .orFail(() => new NotFoundError('Пользователь не существует.'))
     .then((user) => res.send(user))
     .catch((err) => {
       if (err.name === 'CastError') {
