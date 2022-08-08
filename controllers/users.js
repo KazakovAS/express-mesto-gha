@@ -5,14 +5,7 @@ const BadRequestError = require('../errors/BadRequestError');
 const ForbiddenError = require('../errors/ForbiddenError');
 const NotFoundError = require('../errors/NotFoundError');
 const ConflictError = require('../errors/ConflictError');
-const {
-  created,
-  badRequest,
-  forbidden,
-  notFound,
-  conflict,
-  serverError,
-} = require('../utils/responseStatus');
+const { created, forbidden, notFound } = require('../utils/responseStatus');
 
 const MONGO_DUPLICATE_ERROR_CODE = 11000;
 const SALT_ROUNDS = 10;
@@ -39,7 +32,13 @@ const getUser = (req, res, next) => {
 };
 
 const createUser = (req, res, next) => {
-  const { name, about, avatar, email, password } = req.body;
+  const {
+    name,
+    about,
+    avatar,
+    email,
+    password,
+  } = req.body;
 
   if (!email || !password) {
     next(new BadRequestError('Не передан email или пароль.'));
@@ -47,7 +46,13 @@ const createUser = (req, res, next) => {
 
   bcrypt
     .hash(password, SALT_ROUNDS)
-    .then((hash) => User.create({ name, about, avatar, email, password: hash }))
+    .then((hash) => User.create({
+      name,
+      about,
+      avatar,
+      email,
+      password: hash,
+    }))
     .then((user) => res.status(created).send(user))
     .catch((err) => {
       if (err.name === 'ValidationError') {
@@ -129,7 +134,7 @@ const login = (req, res, next) => {
         next(err);
       }
     });
-}
+};
 
 module.exports = {
   getUsers,

@@ -4,9 +4,9 @@ const UnauthorizedError = require('../errors/UnauthorizedError');
 const ForbiddenError = require('../errors/ForbiddenError');
 
 const auth = (req, res, next) => {
-  const auth = req.headers.authorization;
+  const { authorization } = req.headers.authorization;
 
-  if (!auth) {
+  if (!authorization) {
     next(new UnauthorizedError('Необходима авторизация.'));
   }
 
@@ -24,8 +24,8 @@ const auth = (req, res, next) => {
 
         next();
       })
-      .catch(next)
-  } catch(err) {
+      .catch(next);
+  } catch (err) {
     next(new UnauthorizedError('Необходима авторизация.'));
   }
 };

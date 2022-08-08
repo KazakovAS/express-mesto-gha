@@ -26,7 +26,7 @@ const userSchema = new mongoose.Schema({
     required: true,
     type: String,
     select: false,
-  }
+  },
 }, { versionKey: false });
 
 // userSchema.statics.findUserByCredentials = function (email, password) {
