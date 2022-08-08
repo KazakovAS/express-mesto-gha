@@ -2,6 +2,7 @@ const bcrypt = require('bcrypt');
 const User = require('../models/user');
 const { generateToken } = require('../utils/jwt');
 const BadRequestError = require('../errors/BadRequestError');
+const UnauthorizedError = require('../errors/UnauthorizedError');
 const ForbiddenError = require('../errors/ForbiddenError');
 const NotFoundError = require('../errors/NotFoundError');
 const ConflictError = require('../errors/ConflictError');
@@ -106,10 +107,10 @@ const login = (req, res, next) => {
     next(new BadRequestError('Не передан email или пароль.'));
   }
 
-  User.findOne({ email })
+  User.findOne({ email }).select('+password')
     .then((user) => {
       if (!user) {
-        throw new NotFoundError('Пользователь не существует.');
+        throw new UnauthorizedError('Пользователь не существует.');
       }
 
       return Promise.all([
@@ -128,6 +129,7 @@ const login = (req, res, next) => {
       res.send({ token });
     })
     .catch((err) => {
+      console.log(err)
       if (err.statusCode === forbidden) {
         next(new ForbiddenError('Не правильный email или пароль.'));
       } else {
