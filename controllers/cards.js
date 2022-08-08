@@ -28,7 +28,7 @@ const deleteCard = (req, res, next) => {
   const { cardId } = req.params;
 
   Card.findByIdAndDelete(cardId)
-    .orFail(() => throw new NotFoundError('Карточка не существует.'))
+    .orFail(() => new NotFoundError('Карточка не существует.'))
     .then((card) => res.send(card))
     .catch(next);
 };

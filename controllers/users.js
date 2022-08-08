@@ -20,7 +20,7 @@ const getUser = (req, res, next) => {
   const { userId } = req.params;
 
   User.findById(userId)
-    .orFail(() => throw new NotFoundError('Пользователь не существует.'))
+    .orFail(() => new NotFoundError('Пользователь не существует.'))
     .then((user) => res.send(user))
     .catch((err) => {
       if (err.name === 'CastError') {
