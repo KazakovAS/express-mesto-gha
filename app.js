@@ -1,6 +1,7 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
+const { errors } = require('celebrate');
 
 const authorization = require('./middlewares/authorization');
 const errorHandler = require('./middlewares/errorHandler');
@@ -25,6 +26,7 @@ app.use(authorization);
 app.use('/users', usersRouter);
 app.use('/cards', cardsRouter);
 
+app.use(errors());
 app.use(logErrors);
 app.use(errorHandler);
 
