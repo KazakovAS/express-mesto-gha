@@ -1,7 +1,5 @@
 const { checkToken } = require('../utils/jwt');
-const User = require('../models/user');
 const UnauthorizedError = require('../errors/UnauthorizedError');
-const ForbiddenError = require('../errors/ForbiddenError');
 
 const authorization = (req, res, next) => {
   const auth = req.headers.authorization;
@@ -10,24 +8,17 @@ const authorization = (req, res, next) => {
     next(new UnauthorizedError('Необходима авторизация.'));
   }
 
+  let payload;
   const token = auth.replace('Bearer ', '');
 
   try {
-    const payload = checkToken(token);
-    User.findOne({ email: payload.email })
-      .then((user) => {
-        if (!user) {
-          throw new ForbiddenError('Не правильный email или пароль.');
-        }
-
-        req.user = payload;
-
-        next();
-      })
-      .catch(next);
+    payload = checkToken(token);
   } catch (err) {
     next(new UnauthorizedError('Необходима авторизация.'));
   }
+
+  req.user = payload;
+  next();
 };
 
 module.exports = authorization;

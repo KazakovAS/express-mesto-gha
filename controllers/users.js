@@ -17,9 +17,8 @@ const getUsers = (req, res, next) => {
     .catch(next);
 };
 
-const getUser = (req, res, next) => {
+const getCurrentUser = (req, res, next) => {
   const { userId } = req.params;
-
   User.findById(userId)
     .orFail(() => new NotFoundError('Пользователь не существует.'))
     .then((user) => res.send(user))
@@ -146,7 +145,7 @@ const login = (req, res, next) => {
 
 module.exports = {
   getUsers,
-  getUser,
+  getCurrentUser,
   createUser,
   updateUserInfo,
   updateUserAvatar,
