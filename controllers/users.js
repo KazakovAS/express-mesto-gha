@@ -1,6 +1,10 @@
 const bcrypt = require('bcrypt');
 const User = require('../models/user');
 const { generateToken } = require('../utils/jwt');
+const BadRequestError = require('../errors/BadRequestError');
+const ForbiddenError = require('../errors/ForbiddenError');
+const NotFoundError = require('../errors/NotFoundError');
+const ConflictError = require('../errors/ConflictError');
 const {
   created,
   badRequest,
@@ -13,118 +17,94 @@ const {
 const MONGO_DUPLICATE_ERROR_CODE = 11000;
 const SALT_ROUNDS = 10;
 
-const getUsers = (req, res) => {
+const getUsers = (req, res, next) => {
   User.find({})
     .then((users) => res.send(users))
-    .catch((err) => res.status(serverError).send({ message: err.message }));
+    .catch(next);
 };
 
-const getUser = (req, res) => {
+const getUser = (req, res, next) => {
   const { userId } = req.params;
 
   User.findById(userId)
-    .orFail(() => {
-      const error = new Error();
-
-      error.statusCode = notFound;
-      throw error;
-    })
+    .orFail(() => new NotFoundError('Пользователь не существует.'))
     .then((user) => res.send(user))
     .catch((err) => {
       if (err.name === 'CastError') {
-        res.status(badRequest).send({ message: 'Невалидный идентификатор пользователя.' });
-      } else if (err.statusCode === notFound) {
-        res.status(notFound).send({ message: 'Пользователь не существует.' });
+        next(new BadRequestError('Невалидный идентификатор пользователя.'));
       } else {
-        res.status(serverError).send({ message: err.message });
+        next(err);
       }
     });
 };
 
-const createUser = (req, res) => {
+const createUser = (req, res, next) => {
   const { name, about, avatar, email, password } = req.body;
 
   if (!email || !password) {
-    return res.status(badRequest).send({ message: 'Не передан email или пароль' })
+    next(new BadRequestError('Не передан email или пароль.'));
   }
 
   bcrypt
     .hash(password, SALT_ROUNDS)
-    .then((hash) =>  User.create({ name, about, avatar, email, password: hash }))
+    .then((hash) => User.create({ name, about, avatar, email, password: hash }))
     .then((user) => res.status(created).send(user))
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        res.status(badRequest).send({ message: 'Невалидный идентификатор пользователя.' });
+        next(new BadRequestError('Невалидный идентификатор пользователя.'));
       } else if (err.code === MONGO_DUPLICATE_ERROR_CODE) {
-        res.status(conflict).send({ message: 'Email занят.' });
+        next(new ConflictError('Email занят.'));
       } else if (err.statusCode === notFound) {
-        res.status(notFound).send({ message: 'Пользователь не существует.' });
+        next(new NotFoundError('Пользователь не существует.'));
       } else {
-        res.status(serverError).send({ message: err.message });
+        next(err);
       }
     });
 };
 
-const updateUserInfo = (req, res) => {
+const updateUserInfo = (req, res, next) => {
   const userId = req.user._id;
   const { name, about } = req.body;
 
   User.findByIdAndUpdate(userId, { name, about }, { new: true })
-    .orFail(() => {
-      const error = new Error();
-
-      error.statusCode = notFound;
-      throw error;
-    })
+    .orFail(() => new NotFoundError('Пользователь не существует.'))
     .then((user) => res.send(user))
     .catch((err) => {
       if (err.name === 'CastError') {
-        res.status(badRequest).send({ message: 'Невалидный идентификатор пользователя.' });
-      } else if (err.statusCode === notFound) {
-        res.status(notFound).send({ message: 'Пользователь не существует.' });
+        next(new BadRequestError('Невалидный идентификатор пользователя.'));
       } else {
-        res.status(serverError).send({ message: err.message });
+        next(err);
       }
     });
 };
 
-const updateUserAvatar = (req, res) => {
+const updateUserAvatar = (req, res, next) => {
   const userId = req.user._id;
   const { avatar } = req.body;
 
   User.findByIdAndUpdate(userId, { avatar }, { new: true })
-    .orFail(() => {
-      const error = new Error();
-
-      error.statusCode = notFound;
-      throw error;
-    })
+    .orFail(() => new NotFoundError('Пользователь не существует.'))
     .then((user) => res.send(user))
     .catch((err) => {
       if (err.name === 'CastError') {
-        res.status(badRequest).send({ message: 'Невалидный идентификатор пользователя.' });
-      } else if (err.statusCode === notFound) {
-        res.status(notFound).send({ message: 'Пользователь не существует.' });
+        next(new BadRequestError('Невалидный идентификатор пользователя.'));
       } else {
-        res.status(serverError).send({ message: err.message });
+        next(err);
       }
     });
 };
 
-const login = (req, res) => {
+const login = (req, res, next) => {
   const { email, password } = req.body;
 
   if (!email || !password) {
-    return res.status(badRequest).send({ message: 'Не передан email или пароль' })
+    next(new BadRequestError('Не передан email или пароль.'));
   }
 
   User.findOne({ email })
     .then((user) => {
       if (!user) {
-        const error = new Error();
-
-        error.statusCode = forbidden;
-        throw error;
+        next(new NotFoundError('Пользователь не существует.'));
       }
 
       return Promise.all([
@@ -134,10 +114,7 @@ const login = (req, res) => {
     })
     .then(([user, isPasswordCorrect]) => {
       if (!isPasswordCorrect) {
-        const error = new Error();
-
-        error.statusCode = forbidden;
-        throw error;
+        next(new ForbiddenError('Не правильный email или пароль.'));
       }
 
       return generateToken({ _id: user._id }, '7d');
@@ -147,11 +124,11 @@ const login = (req, res) => {
     })
     .catch((err) => {
       if (err.statusCode === forbidden) {
-        return res.status(forbidden).send({ message: 'Не правильный email или пароль' });
+        next(new ForbiddenError('Не правильный email или пароль.'));
       } else {
-        res.status(serverError).send({ message: err.message });
+        next(err);
       }
-    })
+    });
 }
 
 module.exports = {
