@@ -1,6 +1,6 @@
 const bcrypt = require('bcrypt');
-const jwt = require('jsonwebtoken');
 const User = require('../models/user');
+const { generateToken } = require('../utils/jwt');
 const {
   created,
   badRequest,
@@ -12,7 +12,6 @@ const {
 
 const MONGO_DUPLICATE_ERROR_CODE = 11000;
 const SALT_ROUNDS = 10;
-const SECRET_KEY = 'WUBBA LUBBA DUB DUB';
 
 const getUsers = (req, res) => {
   User.find({})
@@ -141,7 +140,10 @@ const login = (req, res) => {
         throw error;
       }
 
-      const token = jwt.sign({ _id: user._id}, SECRET_KEY, { expiresIn: 7d });
+      return generateToken({ _id: user._id }, '7d');
+    })
+    .then((token) => {
+      res.send({ token });
     })
     .catch((err) => {
       if (err.statusCode === forbidden) {
