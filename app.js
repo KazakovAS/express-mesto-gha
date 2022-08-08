@@ -7,7 +7,6 @@ const authorization = require('./middlewares/authorization');
 const notFoundPage = require('./middlewares/notFoundPage');
 const errorHandler = require('./middlewares/errorHandler');
 const { validateUserBody, validateAuthentication } = require('./middlewares/validations');
-const logErrors = require('./middlewares/logErrors');
 const createUser = require('./routes/createUser');
 const login = require('./routes/login');
 const usersRouter = require('./routes/users');
@@ -29,7 +28,6 @@ app.use('/cards', authorization, cardsRouter);
 app.use(notFoundPage);
 
 app.use(errors());
-app.use(logErrors);
 app.use(errorHandler);
 
 
