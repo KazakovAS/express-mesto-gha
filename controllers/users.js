@@ -56,8 +56,7 @@ const createUser = (req, res, next) => {
     .then((user) => res.status(created).send(user))
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        next(new BadRequestError(`${Object.values(err.errors).map((error) => error.message).join(', ')}`));
-        // next(new BadRequestError('Невалидный идентификатор пользователя.'));
+        next(new BadRequestError('Невалидные данные пользователя.'));
       } else if (err.code === MONGO_DUPLICATE_ERROR_CODE) {
         next(new ConflictError('Email занят.'));
       } else if (err.statusCode === notFound) {

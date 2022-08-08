@@ -1,5 +1,5 @@
 const router = require('express').Router();
-const { validateObjId, validateCardBody } = require('../middlewares/validatons');
+const { validateObjId, validateCardBody } = require('../middlewares/validations');
 const {
   getCards,
   createCard,

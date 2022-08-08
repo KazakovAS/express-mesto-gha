@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 const validator = require('validator');
-const { urlRegExp } = require('../middlewares/validatons');
+const { urlRegExp } = require('../middlewares/validations');
 
 const userSchema = new mongoose.Schema({
   name: {
