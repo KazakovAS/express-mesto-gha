@@ -88,7 +88,7 @@ const updateUserAvatar = (req, res, next) => {
   const { avatar } = req.body;
 
   User.findByIdAndUpdate(userId, { avatar }, { new: true })
-    .orFail(() => throw new NotFoundError('Пользователь не существует.'))
+    .orFail(() => new NotFoundError('Пользователь не существует.'))
     .then((user) => res.send(user))
     .catch((err) => {
       if (err.name === 'CastError') {

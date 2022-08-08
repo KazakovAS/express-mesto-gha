@@ -54,7 +54,7 @@ const deleteLikeCard = (req, res, next) => {
   const { cardId } = req.params;
 
   Card.findByIdAndUpdate(cardId, { $pull: { likes: owner } }, { new: true })
-    .orFail(() => throw new NotFoundError('Карточка не существует.'))
+    .orFail(() => new NotFoundError('Карточка не существует.'))
     .then((card) => res.send(card))
     .catch((err) => {
       if (err.name === 'CastError') {
