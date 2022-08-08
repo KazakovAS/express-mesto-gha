@@ -14,7 +14,7 @@ const authorization = (req, res, next) => {
 
   try {
     const payload = checkToken(token);
-    User.findOne({ email: payload.email }).select('+password')
+    User.findOne({ email: payload.email })
       .then((user) => {
         if (!user) {
           throw new ForbiddenError('Не правильный email или пароль.');
