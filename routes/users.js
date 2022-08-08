@@ -1,4 +1,5 @@
 const router = require('express').Router();
+const { validateObjId, validateAvatar, validateProfile } = require('../middlewares/validatons');
 const {
   getUsers,
   getUser,
@@ -8,7 +9,7 @@ const {
 
 router.get('/', getUsers);
 router.get('/:userId', getUser);
-router.patch('/me', updateUserInfo);
-router.patch('/me/avatar', updateUserAvatar);
+router.patch('/me', validateProfile, updateUserInfo);
+router.patch('/me/avatar', validateAvatar, updateUserAvatar);
 
 module.exports = router;
