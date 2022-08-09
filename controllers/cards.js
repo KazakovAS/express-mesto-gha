@@ -32,13 +32,13 @@ const deleteCard = (req, res, next) => {
   Card.findById(id)
     .orFail(() => new NotFoundError('Карточка не существует.'))
     .then((card) => {
-      if (card.owner !== userId) {
-        next(new ForbiddenError('Нельзя удалить чужую карточку'));
-      } else {
-        return Card.deleteOne(card)
-          .then(() => res.send(card))
-          .catch(next);
+      if (!card.owner.equals(userId)) {
+        next(new ForbiddenError('Доступ запрещен.'));
       }
+
+      return Card.deleteOne(card)
+        .then(() => res.send(card))
+        .catch(next);
     })
     .catch(next);
 };
