@@ -29,7 +29,7 @@ const deleteCard = (req, res, next) => {
   const userId = req.user._id;
   const { id } = req.params;
 
-  Card.findOne(id)
+  Card.findById(id)
     .orFail(() => new NotFoundError('Карточка не существует.'))
     .then((card) => {
       if (card.owner !== userId) {
@@ -42,6 +42,7 @@ const deleteCard = (req, res, next) => {
           .catch(next);
       }
     })
+    .catch(next);
 };
 
 const setLikeCard = (req, res, next) => {

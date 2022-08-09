@@ -19,7 +19,6 @@ const getUsers = (req, res, next) => {
 
 const getUser = (req, res, next) => {
   const { id } = req.params.id;
-  console.log(req.params.id)
 
   User.findById(id)
     .orFail(() => new NotFoundError('Пользователь не существует.'))
@@ -151,7 +150,6 @@ const login = (req, res, next) => {
       res.send({ token });
     })
     .catch((err) => {
-      console.log(err)
       if (err.statusCode === forbidden) {
         next(new ForbiddenError('Не правильный email или пароль.'));
       } else {

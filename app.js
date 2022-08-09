@@ -30,5 +30,4 @@ app.use(notFoundPage);
 app.use(errors());
 app.use(errorHandler);
 
-
 app.listen(PORT);

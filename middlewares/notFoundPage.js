@@ -5,4 +5,3 @@ const notFoundPage = (req, res, next) => {
 };
 
 module.exports = notFoundPage;
-
