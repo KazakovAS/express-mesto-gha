@@ -6,7 +6,7 @@ const urlRegExp = new RegExp('https?:\\/\\/(www\\.)?[-a-zA-Z0-9@:%._\\+~#=]{1,25
 const validateObjId = celebrate({
   params: Joi.object().keys({
     id: Joi.string().required().custom((value, helpers) => {
-      console.log(ObjectId)
+      console.log('ObjectId')
       if (ObjectId.isValid(value)) {
         return value;
       }
