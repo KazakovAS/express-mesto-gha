@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const { urlRegExp } = require('../middlewares/validations');
+// const { urlRegExp } = require('../middlewares/validations');
 
 const cardSchema = new mongoose.Schema({
   name: {
@@ -11,10 +11,10 @@ const cardSchema = new mongoose.Schema({
   link: {
     required: true,
     type: String,
-    validate: {
-      validator: (v) => urlRegExp.test(v),
-      message: 'Поле "link" должно быть валидным url-адресом.',
-    },
+    // validate: {
+    //   validator: (v) => urlRegExp.test(v),
+    //   message: 'Поле "link" должно быть валидным url-адресом.',
+    // },
   },
   owner: {
     required: true,

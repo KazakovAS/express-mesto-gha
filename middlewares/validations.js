@@ -3,6 +3,13 @@ const { ObjectId } = require('mongoose').Types;
 
 const urlRegExp = /https?:\/\/(www\.)?[-a-zA-Z0-9@:%._+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_+.~#?&/=]*)/;
 
+const validateAuthorization = celebrate({
+  body: Joi.object().keys({
+    email: Joi.string().required().email(),
+    password: Joi.string().required(),
+  }),
+});
+
 const validateId = celebrate({
   params: Joi.object().keys({
     id: Joi.string().required().custom((value, helpers) => {
@@ -14,13 +21,6 @@ const validateId = celebrate({
   }),
 });
 
-const validateCard = celebrate({
-  body: Joi.object().keys({
-    name: Joi.string().required().min(2).max(30),
-    link: Joi.string().required().pattern(urlRegExp),
-  }),
-});
-
 const validateUser = celebrate({
   body: Joi.object().keys({
     name: Joi.string().min(2).max(30),
@@ -28,13 +28,6 @@ const validateUser = celebrate({
     password: Joi.string().required(),
     email: Joi.string().required().email(),
     avatar: Joi.string().pattern(urlRegExp),
-  }),
-});
-
-const validateAuthorization = celebrate({
-  body: Joi.object().keys({
-    email: Joi.string().required().email(),
-    password: Joi.string().required(),
   }),
 });
 
@@ -51,8 +44,15 @@ const validateUserInfo = celebrate({
   },
 });
 
+const validateCard = celebrate({
+  body: Joi.object().keys({
+    name: Joi.string().required().min(2).max(30),
+    link: Joi.string().required().pattern(urlRegExp),
+  }),
+});
+
 module.exports = {
-  urlRegExp,
+  // urlRegExp,
   validateId,
   validateCard,
   validateUser,
