@@ -52,11 +52,10 @@ const validateCard = celebrate({
 });
 
 module.exports = {
-  // urlRegExp,
-  validateId,
-  validateCard,
-  validateUser,
   validateAuthorization,
+  validateId,
+  validateUser,
   validateAvatar,
   validateUserInfo,
+  validateCard,
 };
