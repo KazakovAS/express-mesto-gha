@@ -25,9 +25,9 @@ const createCard = (req, res, next) => {
 };
 
 const deleteCard = (req, res, next) => {
-  const { cardId } = req.params;
+  const { id } = req.params;
 
-  Card.findByIdAndDelete(cardId)
+  Card.findByIdAndDelete(id)
     .orFail(() => new NotFoundError('Карточка не существует.'))
     .then((card) => res.send(card))
     .catch(next);
@@ -35,9 +35,9 @@ const deleteCard = (req, res, next) => {
 
 const setLikeCard = (req, res, next) => {
   const owner = req.user._id;
-  const { cardId } = req.params;
+  const { id } = req.params;
 
-  Card.findByIdAndUpdate(cardId, { $addToSet: { likes: owner } }, { new: true })
+  Card.findByIdAndUpdate(id, { $addToSet: { likes: owner } }, { new: true })
     .orFail(() => new NotFoundError('Карточка не существует.'))
     .then((card) => res.send(card))
     .catch((err) => {
@@ -51,9 +51,9 @@ const setLikeCard = (req, res, next) => {
 
 const deleteLikeCard = (req, res, next) => {
   const owner = req.user._id;
-  const { cardId } = req.params;
+  const { id } = req.params;
 
-  Card.findByIdAndUpdate(cardId, { $pull: { likes: owner } }, { new: true })
+  Card.findByIdAndUpdate(id, { $pull: { likes: owner } }, { new: true })
     .orFail(() => new NotFoundError('Карточка не существует.'))
     .then((card) => res.send(card))
     .catch((err) => {

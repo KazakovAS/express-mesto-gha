@@ -18,9 +18,10 @@ const getUsers = (req, res, next) => {
 };
 
 const getUser = (req, res, next) => {
-  const { userId } = req.params.id;
+  const { id } = req.params.id;
+  console.log(req.params.id)
 
-  User.findById(userId)
+  User.findById(id)
     .orFail(() => new NotFoundError('Пользователь не существует.'))
     .then((user) => res.send(user))
     .catch((err) => {
@@ -33,9 +34,9 @@ const getUser = (req, res, next) => {
 };
 
 const getCurrentUser = (req, res, next) => {
-  const userId = req.user._id;
+  const id = req.user._id;
 
-  User.findById(userId)
+  User.findById(id)
     .orFail(() => new NotFoundError('Пользователь не существует.'))
     .then((user) => res.send(user))
     .catch((err) => {
@@ -90,10 +91,10 @@ const createUser = (req, res, next) => {
 };
 
 const updateUserInfo = (req, res, next) => {
-  const userId = req.user._id;
+  const id = req.user._id;
   const { name, about } = req.body;
 
-  User.findByIdAndUpdate(userId, { name, about }, { new: true })
+  User.findByIdAndUpdate(id, { name, about }, { new: true })
     .orFail(() => new NotFoundError('Пользователь не существует.'))
     .then((user) => res.send(user))
     .catch((err) => {
@@ -106,10 +107,10 @@ const updateUserInfo = (req, res, next) => {
 };
 
 const updateUserAvatar = (req, res, next) => {
-  const userId = req.user._id;
+  const id = req.user._id;
   const { avatar } = req.body;
 
-  User.findByIdAndUpdate(userId, { avatar }, { new: true })
+  User.findByIdAndUpdate(id, { avatar }, { new: true })
     .orFail(() => new NotFoundError('Пользователь не существует.'))
     .then((user) => res.send(user))
     .catch((err) => {
