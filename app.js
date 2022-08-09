@@ -6,7 +6,7 @@ const { errors } = require('celebrate');
 const authorization = require('./middlewares/authorization');
 const notFoundPage = require('./middlewares/notFoundPage');
 const errorHandler = require('./middlewares/errorHandler');
-const { validateUserBody, validateAuthorization } = require('./middlewares/validations');
+const { validateUser, validateAuthorization } = require('./middlewares/validations');
 const createUser = require('./routes/createUser');
 const login = require('./routes/login');
 const usersRouter = require('./routes/users');
@@ -21,7 +21,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 app.use('/signin', validateAuthorization, login);
-app.use('/signup', validateUserBody, createUser);
+app.use('/signup', validateUser, createUser);
 
 app.use('/users', authorization, usersRouter);
 app.use('/cards', authorization, cardsRouter);
