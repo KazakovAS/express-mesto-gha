@@ -33,7 +33,7 @@ const deleteCard = (req, res, next) => {
     .orFail(() => new NotFoundError('Карточка не существует.'))
     .then((card) => {
       if (!card.owner.equals(userId)) {
-        next(new ForbiddenError('Доступ запрещен.'));
+        return next(new ForbiddenError('Доступ запрещен.'));
       }
 
       return Card.deleteOne(card)

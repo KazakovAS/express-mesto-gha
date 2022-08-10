@@ -38,13 +38,7 @@ const getCurrentUser = (req, res, next) => {
   User.findById(id)
     .orFail(() => new NotFoundError('Пользователь не существует.'))
     .then((user) => res.send(user))
-    .catch((err) => {
-      if (err.name === 'CastError') {
-        next(new BadRequestError('Невалидный идентификатор пользователя.'));
-      } else {
-        next(err);
-      }
-    });
+    .catch(next);
 };
 
 const createUser = (req, res, next) => {
@@ -55,10 +49,6 @@ const createUser = (req, res, next) => {
     email,
     password,
   } = req.body;
-
-  if (!email || !password) {
-    next(new BadRequestError('Не передан email или пароль.'));
-  }
 
   bcrypt
     .hash(password, SALT_ROUNDS)
@@ -81,8 +71,6 @@ const createUser = (req, res, next) => {
         next(new BadRequestError('Невалидные данные пользователя.'));
       } else if (err.code === MONGO_DUPLICATE_ERROR_CODE) {
         next(new ConflictError('Email занят.'));
-      } else if (err.statusCode === notFound) {
-        next(new NotFoundError('Пользователь не существует.'));
       } else {
         next(err);
       }
@@ -93,11 +81,11 @@ const updateUserInfo = (req, res, next) => {
   const id = req.user._id;
   const { name, about } = req.body;
 
-  User.findByIdAndUpdate(id, { name, about }, { new: true })
+  User.findByIdAndUpdate(id, { name, about }, { new: true, runValidators: true })
     .orFail(() => new NotFoundError('Пользователь не существует.'))
     .then((user) => res.send(user))
     .catch((err) => {
-      if (err.name === 'CastError') {
+      if (err.name === 'ValidationError') {
         next(new BadRequestError('Невалидный идентификатор пользователя.'));
       } else {
         next(err);
@@ -109,11 +97,11 @@ const updateUserAvatar = (req, res, next) => {
   const id = req.user._id;
   const { avatar } = req.body;
 
-  User.findByIdAndUpdate(id, { avatar }, { new: true })
+  User.findByIdAndUpdate(id, { avatar }, { new: true, runValidators: true })
     .orFail(() => new NotFoundError('Пользователь не существует.'))
     .then((user) => res.send(user))
     .catch((err) => {
-      if (err.name === 'CastError') {
+      if (err.name === 'ValidationError') {
         next(new BadRequestError('Невалидный идентификатор пользователя.'));
       } else {
         next(err);
@@ -123,10 +111,6 @@ const updateUserAvatar = (req, res, next) => {
 
 const login = (req, res, next) => {
   const { email, password } = req.body;
-
-  if (!email || !password) {
-    next(new BadRequestError('Не передан email или пароль.'));
-  }
 
   User.findOne({ email }).select('+password')
     .then((user) => {
@@ -141,7 +125,7 @@ const login = (req, res, next) => {
     })
     .then(([user, isPasswordCorrect]) => {
       if (!isPasswordCorrect) {
-        throw new ForbiddenError('Не правильный email или пароль.');
+        throw new UnauthorizedError('Не правильный email или пароль.');
       }
 
       return generateToken({ _id: user._id }, '7d');
@@ -149,13 +133,7 @@ const login = (req, res, next) => {
     .then((token) => {
       res.send({ token });
     })
-    .catch((err) => {
-      if (err.statusCode === forbidden) {
-        next(new ForbiddenError('Не правильный email или пароль.'));
-      } else {
-        next(err);
-      }
-    });
+    .catch(next);
 };
 
 module.exports = {
