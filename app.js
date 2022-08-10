@@ -23,8 +23,9 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use('/signin', validateAuthorization, login);
 app.use('/signup', validateUser, createUser);
 
-app.use('/users', authorization, usersRouter);
-app.use('/cards', authorization, cardsRouter);
+app.use(authorization);
+app.use('/users', usersRouter);
+app.use('/cards', cardsRouter);
 app.use(notFoundPage);
 
 app.use(errors());
