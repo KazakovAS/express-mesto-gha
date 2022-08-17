@@ -7,6 +7,7 @@ const authorization = require('./middlewares/authorization');
 const notFoundPage = require('./middlewares/notFoundPage');
 const errorHandler = require('./middlewares/errorHandler');
 const { validateAuthorization, validateUser } = require('./middlewares/validations');
+const { requestLogger, errorLogger } = require('./middlewares/logger');
 const createUser = require('./routes/createUser');
 const login = require('./routes/login');
 const usersRouter = require('./routes/users');
@@ -20,6 +21,7 @@ mongoose.connect('mongodb://localhost:27017/mestodb');
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
+app.use(requestLogger);
 app.use('/signin', validateAuthorization, login);
 app.use('/signup', validateUser, createUser);
 
@@ -28,6 +30,7 @@ app.use('/users', usersRouter);
 app.use('/cards', cardsRouter);
 app.use(notFoundPage);
 
+app.use(errorLogger);
 app.use(errors());
 app.use(errorHandler);
 
